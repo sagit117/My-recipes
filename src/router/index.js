@@ -1,14 +1,26 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import store from '@/store'
 
 Vue.use(VueRouter)
 
-  const routes = [
+const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home
+    meta: {
+      layout: 'MainLayout'
+    },
+    component: () => import('../views/Home.vue')
+  },
+  {
+    path: '/FotoRecipes',
+    name: 'FotoRecipes',
+    meta: {
+      layout: 'RecipeLayout',
+      auth: true
+    },
+    component: () => import('../views/FotoRecipes.vue')
   },
 ]
 
@@ -16,6 +28,15 @@ const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  if (to.meta.auth && !store.getters.getUserIsAuth) {
+    // Нужно проверять залогинен пользователь, если нет выводить окно логина
+    store.commit('setAuthForm', 1)
+  } else {
+    next()
+  }
 })
 
 export default router
