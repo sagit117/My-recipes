@@ -9,7 +9,7 @@
       <div class="row">
         <div class="col">
 
-          <form novalidate> <!-- class="was-validated" -->
+          <form novalidate @submit.prevent="submit"> <!-- class="was-validated" -->
 
             <Input 
               type="text" 
@@ -22,16 +22,6 @@
               type="password" 
               @on-input="passInput" 
             />
-
-            <!--<div class="form-group">
-              <label for="pass">Пароль:</label>
-              <input 
-                type="password" 
-                class="form-control" 
-                id="pass" 
-                v-model.trim="pass">
-            </div>-->
-
 
             <div class="form-group text-center">
               <a href="#" class="d-inline" @click.prevent="$store.commit('setAuthForm', 2)"> Забыли пароль? </a> | 
@@ -66,7 +56,6 @@ export default {
       email: "",
       emailError: {
         minLength: false,
-        noEmail: false,
         wrongEmail: false
       },
       pass: "",
@@ -77,17 +66,38 @@ export default {
     errorTextEmail() {
       let error = "";
       if (this.emailError.minLength) error = "Поле email не должно быть пустым!"
-
+      if (this.emailError.wrongEmail) error = "Не верный логин или пароль!"
       return error;
     }
   },
   methods: {
     emailInput(value) {
       this.emailError.minLength = minLength(value);
+      this.emailError.wrongEmail = false;
       this.email = value;
     },
     passInput(value) {
+      this.emailError.wrongEmail = false;
       this.pass = value;
+    },
+    submit() {
+      this.emailError.minLength = minLength(this.email);
+      if (!this.emailError.minLength) {
+        this.showWait = true;
+        const formData = new FormData();
+        formData.append('login', this.email);
+        formData.append('pass', this.pass);
+
+        this.$store.dispatch('loginWithPass', formData)
+        .then(() => {
+          this.showWait = false;
+          this.$store.commit('setAuthForm', 0);
+        })
+        .catch((e) => {
+          this.showWait = false;
+          if (e.errorCode === 'auth/pass_wrong') this.emailError.wrongEmail = true;
+        })
+      }
     }
   }
 }

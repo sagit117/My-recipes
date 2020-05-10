@@ -1,6 +1,7 @@
 .DS_Store
 node_modules
 /dist
+/public/api/s_connect.php
 
 # local env files
 .env.local

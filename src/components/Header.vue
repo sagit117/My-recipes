@@ -5,7 +5,17 @@
       <nav class="my-2 my-md-0 mr-md-3">
         <router-link class="p-2 text-dark" to="/FotoRecipes">Мои рецепты</router-link>
       </nav>
-      <button class="btn btn-primary" @click="$store.commit('setAuthForm', 1)">Логин</button>
+      <button 
+        v-if="!$store.getters.getUserIsAuth"
+        class="btn btn-primary" 
+        @click="$store.commit('setAuthForm', 1)">Войти
+      </button>
+      <router-link 
+        v-else
+        class="btn btn-primary" 
+        to="/Account" 
+        tag="button">Личный кабинет
+      </router-link>
     </div>
   </div>
 </template>

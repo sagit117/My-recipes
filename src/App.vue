@@ -5,15 +5,18 @@
     </component>
 
     <Login v-if="$store.getters.getAuthForm === 1" />
+    <Alert v-if="$store.getters.getAlert.show" />
   </div>
 </template>
 
 <script>
 import Login from '@/components/Login.vue'
+import Alert from '@/components/Alert.vue'
 
 export default {
   components: {
-    Login
+    Login,
+    Alert
   },
   data() {
     return {

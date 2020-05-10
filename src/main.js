@@ -9,6 +9,7 @@ import RecipeLayout from '@/layouts/RecipeLayout.vue'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
 
+// подключение слоев
 Vue.component('MainLayout', MainLayout)
 Vue.component('RecipeLayout', RecipeLayout)
 Vue.component('Header', Header)
