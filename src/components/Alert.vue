@@ -25,7 +25,7 @@ export default {
   },
   methods: {
     close() {
-      this.$store.commit('setShowAlert', { show: false, title: "", text: "", state: 0 });
+      this.$store.commit('setAlert', { show: false, title: "", text: "", state: 0 });
     },
   }
 

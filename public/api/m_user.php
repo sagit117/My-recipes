@@ -7,6 +7,7 @@
   // updateUserHash	  - обновить запись хэш в БД
   // generateCode		  - генерация кода
   // updateUser 		  - изменить поле в таблице пользователь по условию
+  // getUserWithHash  - получить пользователя по хэш
 
   require 's_connect.php';
 
@@ -95,6 +96,39 @@
     mysqli_query($link, "UPDATE `user` SET `$field`='$value', `updated_at`='$now' WHERE `$conditionField`='$conditionValue'") 
       or die(mysqli_error($link));
     return true;
+  }
+
+  function getUserWithHash($hash) { // получить пользователя по хэш
+    global $link;
+    $hash = mysqli_real_escape_string($link, $hash);
+    $agent = mysqli_real_escape_string($link, $_SERVER["HTTP_USER_AGENT"]);
+
+    $result = mysqli_query($link, 
+      "SELECT * FROM `user` 
+      LEFT JOIN `hash_user` 
+      ON user.id=hash_user.id_user 
+      WHERE hash_user.agent='$agent' AND hash_user.hash='$hash' ");
+    
+    $arr = array();
+
+    while ($user = mysqli_fetch_assoc($result)) {
+      $usr = new User();
+      $usr->id = $user['id_user'];
+      //$usr->pass = $user['password'];
+      $usr->post = $user['post'];
+      $usr->name = $user['name'];
+      $usr->surname = $user['surname'];
+      $usr->patronymic = $user['patronymic'];
+      $usr->datereg = $user['datereg'];
+      $usr->rule = $user['rule'];
+      $usr->last_connect = $user['last_connect'];
+      $usr->created_at = $user['created_at'];
+      $usr->updated_at = $user['updated_at'];
+
+      array_push($arr, $usr); // собираем всех найденных пользователей в массив
+    }
+
+    return $arr;
   }
 
   ?>

@@ -22,6 +22,9 @@ export default new Vuex.Store({
       text: "",
       state: 0
     },
+
+    // Wait
+    showWait: false,    //  состояние загрузки
   },
   mutations: {
     setAuthForm(state, data) {
@@ -35,12 +38,15 @@ export default new Vuex.Store({
     },
     setAlert(state, data) {
       state.alert = data;
+    },
+    setShowWait(state, data) {
+      state.showWait = data;
     }
   },
   actions: {
     loginWithPass({ commit }, data) { // логинем пользователя по паролю
       return new Promise((resolve, reject) => {
-        api.loginUserWitchPass(data)    
+        api.loginUserWithPass(data)    
         .then((res) => {
           if (res.errorCode === '') {
             commit('setUserAuth', true);
@@ -62,12 +68,57 @@ export default new Vuex.Store({
           reject();
         })
       })
+    },
+    loginWithHash({ commit }, data) { // логинем по хеш
+      commit('setShowWait', true);
+      api.loginUserWithHash(data.login, data.hash)
+      .then((res) => {
+        commit('setShowWait', false);
+        if (res.errorCode === '') {
+          commit('setUserAuth', true);
+          commit('setCurrentUser', res.user);
+        } 
+      })
+      .catch((error) => {
+        commit('setShowWait', false);
+        console.log(error);
+      })
+    },
+    resetPass({ commit }, data) {
+      return new Promise((resolve, reject) => {
+        commit('setShowWait', true);
+        api.resetUserPass(data)
+        .then((res) => {
+          commit('setShowWait', false);
+          if (res.errorCode === '') {
+            resolve();
+            commit('setAlert', 
+              { show: true, 
+                title: "Успешно", 
+                text: "Новый пароль отправлен на указанный email, так же проверьте папку СПАМ!", 
+                state: 1 })
+          } else if (res.errorCode === 'send_new_pass/no_send_email') {
+            commit('setAlert', { show: true, title: "Ошибка", text: res.errorText, state: 1 })
+            resolve();
+          } else {
+            reject();
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          commit('setShowWait', false);
+          commit('setAlert', { show: true, title: "Ошибка", text: error, state: 2 })
+          reject();
+        })
+      })
     }
   },
   getters: {
     getAuthForm: s => s.authForm, 
     getUserIsAuth: s => s.userIsAuth,
     getAlert: s => s.alert,
+    getShowWait: s => s.showWait,
+    getCurrentUser: s => s.currentUser
   },
   modules: {
   }

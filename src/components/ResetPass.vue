@@ -19,14 +19,8 @@
               caption="Email:"
             />
 
-            <Input 
-              type="password" 
-              @on-input="passInput" 
-              caption="Пароль:"
-            />
-
             <div class="form-group text-center">
-              <a href="#" class="d-inline" @click.prevent="$store.commit('setAuthForm', 2)"> Забыли пароль? </a> | 
+              <a href="#" class="d-inline" @click.prevent="$store.commit('setAuthForm', 1)"> Войти </a> | 
               <a href="#" class="d-inline" @click.prevent="$store.commit('setAuthForm', 3)"> Регистрация </a>
             </div>
               
@@ -35,7 +29,7 @@
               Загрузка...
             </button>
             <button type="submit" class="btn btn-primary" v-else>
-              Войти
+              Отправить
             </button>
           </form>
 
@@ -46,13 +40,12 @@
 </template>
 
 <script>
-  // component: Login
+  // component: ResetPass
   // version: 0.0.1
   // date: 05.2020
-  // sagit117@gmail.com 
-
-import Input from '@/components/Input.vue'
-import {minLength, testEmail} from '@/utils/Validate.js'
+  // sagit117@gmail.com
+  import Input from '@/components/Input.vue'
+  import {minLength, testEmail} from '@/utils/Validate.js'
 
 export default {
   components: {
@@ -64,9 +57,8 @@ export default {
       emailError: {
         minLength: false,
         wrongEmail: false,
-        wrongPass: false
+        noEmail: false
       },
-      pass: "",
       showWait: false
     }
   },
@@ -74,21 +66,17 @@ export default {
     errorTextEmail() {
       let error = "";
       if (this.emailError.minLength) error = "Поле email не должно быть пустым!"
-      if (this.emailError.wrongPass) error = "Не верный логин или пароль!"
-      if (this.emailError.wrongEmail) error = "Введите корректный email"
+      if (this.emailError.wrongEmail) error = "Пользователя не существует!"
+      if (this.emailError.noEmail) error = "Введите корректный email"
       return error;
     }
   },
   methods: {
     emailInput(value) {
       this.emailError.minLength = minLength(value);
-      this.emailError.wrongPass = false;
       this.emailError.wrongEmail = false;
+      this.emailError.noEmail = false;
       this.email = value;
-    },
-    passInput(value) {
-      this.emailError.wrongPass = false;
-      this.pass = value;
     },
     validateEmail() {
       for (let key in this.emailError) {
@@ -98,29 +86,21 @@ export default {
     },
     submit() {
       this.emailError.minLength = minLength(this.email);
-      this.emailError.wrongEmail = !testEmail(this.email);
+      this.emailError.noEmail = !testEmail(this.email);
 
       if (!this.validateEmail()) {
         this.showWait = true;
-        const formData = new FormData();
-        formData.append('login', this.email);
-        formData.append('pass', this.pass);
-
-        this.$store.dispatch('loginWithPass', formData)
+        this.$store.dispatch('resetPass', this.email)
         .then(() => {
           this.showWait = false;
-          this.$store.commit('setAuthForm', 0);
+          this.$store.commit('setAuthForm', 1);
         })
-        .catch((e) => {
+        .catch(() => {
           this.showWait = false;
-          if (e.errorCode === 'auth/pass_wrong') this.emailError.wrongPass = true;
+          this.emailError.wrongEmail = true;
         })
       }
     }
   }
 }
 </script>
-
-<style lang="scss" scoped>
-
-</style>

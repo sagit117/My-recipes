@@ -13,11 +13,10 @@
       <router-link 
         v-else
         class="btn btn-primary" 
-        to="/Account" 
+        :to="/Account/ + $store.getters.getCurrentUser.id" 
         tag="button">Личный кабинет
       </router-link>
     </div>
   </div>
 </template>
 
-<script>

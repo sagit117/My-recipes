@@ -5,28 +5,36 @@
     </component>
 
     <Login v-if="$store.getters.getAuthForm === 1" />
+    <ResetPass v-if="$store.getters.getAuthForm === 2" />
     <Alert v-if="$store.getters.getAlert.show" />
+    <Wait v-if="$store.getters.getShowWait" />
   </div>
 </template>
 
 <script>
 import Login from '@/components/Login.vue'
+import ResetPass from '@/components/ResetPass.vue'
 import Alert from '@/components/Alert.vue'
+import Wait from '@/components/Wait.vue'
 
 export default {
   components: {
     Login,
-    Alert
+    ResetPass,
+    Alert,
+    Wait
   },
   data() {
     return {
-      transitionName: ''
     }
   },
   computed: {
     layout() {
       return this.$route.meta.layout || 'MainLayout'
     }
+  },
+  created() {
+    this.$store.dispatch('loginWithHash', { hash: localStorage.getItem('userHash'), login: localStorage.getItem('userLogin') });
   }
 }
 </script>
@@ -41,5 +49,10 @@ export default {
     top: 50%;
     transform: translate(-50%,-50%);
     z-index: 10;
+  }
+  .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
   }
 </style>

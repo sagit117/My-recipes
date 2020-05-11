@@ -50,4 +50,17 @@
     }
   }
 
+  if (isset($_GET['login'])) {
+    // логин по хэш
+    $user = getUserWithHash($_GET['hash'])[0];
+    if ($user->post === $_GET['login']) {
+      $res->user = $user;
+      exit(json_encode($res));
+    } else {
+      $res->errorText = "Пользователь с хэш не определен!";
+      $res->errorCode = "auth/hash_wrong";
+      exit(json_encode($res));
+    }
+  }
+
   ?>

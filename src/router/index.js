@@ -23,14 +23,16 @@ const routes = [
     component: () => import('../views/FotoRecipes.vue')
   },
   {
-    path: '/Account',
+    path: '/Account/:id',
     name: 'Account',
     meta: {
       layout: 'MainLayout',
       auth: true
     },
     component: () => import('../views/Account.vue')
-  }
+  },
+  
+  { path: '/*', redirect: '/' }
 ]
 
 const router = new VueRouter({
