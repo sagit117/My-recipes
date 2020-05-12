@@ -23,6 +23,21 @@ class API {
       return response.data
     })
   }
+
+  hasUser(post) {
+    return axios.get(`${apiMyRecipes}c_hasUser.php?post=${post}`)
+    .then((response) => {
+      return response.data
+    })
+  }
+
+  sendCodeReg(email) {
+    return axios.get(`${apiMyRecipes}c_sendCode.php?email=${email}`)
+    .then((response) => {
+      return response.data
+    })
+  }
+
  }
 
 export default API

@@ -84,7 +84,7 @@ export default new Vuex.Store({
         console.log(error);
       })
     },
-    resetPass({ commit }, data) {
+    resetPass({ commit }, data) {     // восстановление пароля через форму
       return new Promise((resolve, reject) => {
         commit('setShowWait', true);
         api.resetUserPass(data)
@@ -108,6 +108,46 @@ export default new Vuex.Store({
           console.log(error);
           commit('setShowWait', false);
           commit('setAlert', { show: true, title: "Ошибка", text: error, state: 2 })
+          reject();
+        })
+      })
+    },
+    hasUser({ commit }, data) {       // проверяет существует ли пользователь по email
+      commit('setShowWait', true);
+      return new Promise((resolve, reject) => {
+        api.hasUser(data.post)
+        .then((res) => {
+          resolve(res)
+          commit('setShowWait', false);
+        })
+        .catch((error) => {
+          console.log(error);
+          commit('setShowWait', false);
+          commit('setAlert', { show: true, title: "Ошибка", text: error, state: 2 });
+          reject();
+        })
+      })
+    },
+    sendCodeReg({ commit }, data) {   // выслать код регистрации
+      commit('setShowWait', true);
+      return new Promise((resolve, reject) => {
+        api.sendCodeReg(data)
+        .then((res) => {
+          commit('setShowWait', false);
+          resolve(res);
+          if (res.errorCode === '') {
+            commit('setAlert', { 
+              show: true, 
+              title: "Успешно",
+              text: "Проверочный код отправлен на указанный email, так же проверьте папку СПАМ!",
+              state: 1
+            })
+          } 
+        })
+        .catch((error) => {
+          console.log(error);
+          commit('setShowWait', false);
+          commit('setAlert', { show: true, title: "Ошибка", text: error, state: 2 });
           reject();
         })
       })

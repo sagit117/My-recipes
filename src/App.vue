@@ -6,6 +6,7 @@
 
     <Login v-if="$store.getters.getAuthForm === 1" />
     <ResetPass v-if="$store.getters.getAuthForm === 2" />
+    <Registration v-if="$store.getters.getAuthForm === 3" />
     <Alert v-if="$store.getters.getAlert.show" />
     <Wait v-if="$store.getters.getShowWait" />
   </div>
@@ -14,6 +15,7 @@
 <script>
 import Login from '@/components/Login.vue'
 import ResetPass from '@/components/ResetPass.vue'
+import Registration from '@/components/Registration.vue'
 import Alert from '@/components/Alert.vue'
 import Wait from '@/components/Wait.vue'
 
@@ -21,6 +23,7 @@ export default {
   components: {
     Login,
     ResetPass,
+    Registration,
     Alert,
     Wait
   },
@@ -54,5 +57,6 @@ export default {
     position: absolute;
     top: 10px;
     right: 10px;
+    z-index: 20;
   }
 </style>

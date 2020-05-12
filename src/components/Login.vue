@@ -14,7 +14,7 @@
             <Input 
               type="text" 
               @on-input="emailInput" 
-              :isError="emailError.minLength"
+              :isError="emailError.minLength || emailError.wrongEmail || emailError.wrongPass"
               :textError="errorTextEmail"
               caption="Email:"
             />
