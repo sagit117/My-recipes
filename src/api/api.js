@@ -38,6 +38,13 @@ class API {
     })
   }
 
+  regUser(email, pass) {
+    return axios.get(`${apiMyRecipes}c_reg.php?email=${email}&pass=${pass}`)
+    .then((response) => {
+      return response.data
+    })
+  }
+
  }
 
 export default API

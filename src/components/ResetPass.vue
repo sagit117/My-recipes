@@ -14,7 +14,7 @@
             <Input 
               type="text" 
               @on-input="emailInput" 
-              :isError="emailError.minLength || this.emailError.noEmail"
+              :isError="errorTextEmail !== ''"
               :textError="errorTextEmail"
               caption="Email:"
             />
@@ -78,7 +78,7 @@ export default {
       this.emailError.noEmail = false;
       this.email = value;
     },
-    validateEmail() {
+    invalidEmail() {
       for (let key in this.emailError) {
         if (this.emailError[key]) return true;
       }
@@ -88,16 +88,17 @@ export default {
       this.emailError.minLength = minLength(this.email);
       this.emailError.noEmail = !testEmail(this.email);
 
-      if (!this.validateEmail()) {
+      if (!this.invalidEmail()) {
         this.showWait = true;
         this.$store.dispatch('resetPass', this.email)
-        .then(() => {
+        .then((res) => {
           this.showWait = false;
-          this.$store.commit('setAuthForm', 1);
+          if (res.errorCode === '') this.$store.commit('setAuthForm', 1);
+          this.emailError.noEmail = res.errorCode === 'send_new_pass/no_send_email';
+          this.emailError.wrongEmail = res.errorCode === 'send_new_pass/email_wrong';
         })
         .catch(() => {
           this.showWait = false;
-          this.emailError.wrongEmail = true;
         })
       }
     }

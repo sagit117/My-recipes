@@ -91,18 +91,13 @@ export default new Vuex.Store({
         .then((res) => {
           commit('setShowWait', false);
           if (res.errorCode === '') {
-            resolve();
             commit('setAlert', 
               { show: true, 
                 title: "Успешно", 
                 text: "Новый пароль отправлен на указанный email, так же проверьте папку СПАМ!", 
                 state: 1 })
-          } else if (res.errorCode === 'send_new_pass/no_send_email') {
-            commit('setAlert', { show: true, title: "Ошибка", text: res.errorText, state: 1 })
-            resolve();
-          } else {
-            reject();
-          }
+          } 
+          resolve(res)
         })
         .catch((error) => {
           console.log(error);
@@ -143,6 +138,20 @@ export default new Vuex.Store({
               state: 1
             })
           } 
+        })
+        .catch((error) => {
+          console.log(error);
+          commit('setShowWait', false);
+          commit('setAlert', { show: true, title: "Ошибка", text: error, state: 2 });
+          reject();
+        })
+      })
+    },
+    regUser({ commit }, data) {       // регистрация пользователя
+      return new Promise((resolve, reject) => {
+        api.regUser(data.post, data.pass)
+        .then((res) => {
+          resolve(res);
         })
         .catch((error) => {
           console.log(error);

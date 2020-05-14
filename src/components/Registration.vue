@@ -13,7 +13,7 @@
             <Input 
               type="text" 
               @on-input="emailInput" 
-              :isError="emailError.minLength || emailError.issetEmail || emailError.wrongEmail"
+              :isError="errorTextEmail !== ''"
               :textError="errorTextEmail"
               caption="Email:"
               :maxLength="64"
@@ -26,7 +26,7 @@
               caption="Пароль:"
               :maxLength="32"
               :textError="errorTextPass"
-              :isError="passError.minLength || passError.wrongPass"
+              :isError="errorTextPass !== ''"
             />
 
             <Input 
@@ -48,7 +48,7 @@
               type="text" 
               @on-input="codeInput" 
               :textError="errorTextCode"
-              :isError="codeError.minLength || codeError.wrongCode || codeError.wrongEmail"
+              :isError="errorTextCode !== ''"
               caption="Проверочный код:"
             />
 
@@ -86,7 +86,7 @@ export default {
         wrongEmail: false,
         issetEmail: false
       },
-      pass: "",
+      pass: "",             // пароль пользователя
       passError: {
         minLength: false,
         wrongPass: false,
@@ -104,7 +104,7 @@ export default {
       showTimeOut: false,
       timeOutSendCode: 30,
       emailTrue: false,
-      confPassTrue: false
+      confPassTrue: false   // подтверждение совпадает
     }
   },
   computed: {
@@ -123,11 +123,12 @@ export default {
     },
     errorTextCode() {
       let error = "";
-      if (this.codeError.minLength) error = "Поле проверочный код не должно быть пустым!"
-      if (this.codeError.wrongCode) error = "Код не совпадает!"
-      if (this.codeError.wrongEmail) error = "Почта не совпадает с почтой на которую был выслан код "
+      if (this.codeError.wrongEmail) error = "Почта не совпадает с почтой на которую был выслан код!";
+      if (this.codeError.minLength) error = "Поле проверочный код не должно быть пустым!";
+      if (this.codeError.wrongCode) error = "Код не совпадает!";
+      
       return error;
-    },
+    }
   },
   methods: {
     emailInput(value) {
@@ -141,14 +142,20 @@ export default {
       this.passError.minLength = minLength(value);
       this.pass = value;
       this.confPassTrue = (this.confPass === this.pass && !this.passError.minLength);
+      this.passError.wrongPass = false;
     },
     confInput(value) {
       this.confPass = value;
       this.confPassTrue = (this.confPass === this.pass && !this.passError.minLength);
+      this.passError.wrongPass = false;
     },
     codeInput(value) {
-
+      this.codeError.minLength = minLength(value);
       this.code = value;
+    },
+    regAcept() {
+      if (this.errorTextPass !== '' || this.errorTextCode !== '' || this.errorTextEmail !== '') return false;
+      return true;
     },
     sendCode() {
       this.emailError.wrongEmail = !testEmail(this.email);
@@ -188,8 +195,33 @@ export default {
       }
     },
     submit() {
-      this.emailError.wrongEmail = !testEmail(this.email);
+      this.emailError.wrongEmail = !testEmail(this.email);                                   // email корректный и не пуст
+      this.codeError.wrongEmail = this.resCodePost !== this.email && this.resCodePost !== '';// email равен email на который отправлен код
+      this.codeError.wrongCode = this.code !== this.resCode;                                 // проверочный коды совпадают
+      this.codeError.minLength = minLength(this.code);                                       // проверочный код не пуст
+      this.passError.minLength = minLength(this.pass);                                       // пароль не пуст
+      this.passError.wrongPass = this.confPass !== this.pass                                 // пароли совпадают
 
+      if (this.regAcept()) {
+        // регистрация
+        this.showWait = true;
+        this.$store.dispatch('regUser', { post: this.email, pass: this.pass })
+        .then((res) => {
+          this.showWait = false;
+          if (res.errorCode === '') {
+            this.$store.commit('setAlert', { show: true, 
+              title: "Успешно", 
+              text: "Вы зарегистрированы!", 
+              state: 1 })
+            this.$store.commit('setAuthForm', 1)
+          }
+          this.emailError.wrongEmai = res.errorTextCode === 'reg/email_wrong';
+          this.emailError.issetEmail = res.errorTextCode === 'reg/email_isset'
+        })
+        .catch(() => {
+          this.showWait = false;
+        })
+      }
     },
   }
 }

@@ -8,6 +8,7 @@
   // generateCode		  - генерация кода
   // updateUser 		  - изменить поле в таблице пользователь по условию
   // getUserWithHash  - получить пользователя по хэш
+  // createUser       - создать пользователя
 
   require 's_connect.php';
 
@@ -131,4 +132,16 @@
     return $arr;
   }
 
-  ?>
+  function createUser($user, $pass) {
+    // создать пользователя
+    global $link;
+    $user = mysqli_real_escape_string($link, $user);
+    $pass = md5(md5($pass));
+    $datereg = time();
+
+    mysqli_query($link, "INSERT INTO `user` (`post`, `password`, `datereg`, `created_at`) 
+      VALUES ('$user', '$pass', '$datereg', '$datereg')") or die(mysqli_error($link));
+    return mysqli_insert_id($link);
+  }
+
+?>
