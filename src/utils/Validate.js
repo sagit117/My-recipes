@@ -7,4 +7,9 @@ function minLength(value) {
   return value.length === 0
 }
 
-export {testEmail, minLength}
+function testSymbol(value) {
+  let reg = /^[a-zа-яё\s]+$/iu; //[А-Я-Ё]/gi;
+  return reg.test(value);
+}
+
+export {testEmail, minLength, testSymbol}

@@ -160,6 +160,32 @@ export default new Vuex.Store({
           reject();
         })
       })
+    },
+    getUser({ commit }, data) {       // получить данные текущего пользователя
+      return new Promise((resolve, reject) => {
+        commit('setShowWait', true);
+        let formData = new FormData();
+        formData.append("id", data);
+        formData.append("login", localStorage.getItem("userLogin"));
+        formData.append("hash", localStorage.getItem("userHash"));
+
+        api.getUser(formData)
+        .then((res) => {
+          commit('setShowWait', false);
+          if (res.errorCode === '') {
+            resolve(res.user);
+          } else {
+            reject();
+            commit('setAlert', { show: true, title: "Ошибка", text: res.errorText, state: 2 });
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          commit('setShowWait', false);
+          commit('setAlert', { show: true, title: "Ошибка", text: error, state: 2 });
+          reject();
+        })
+      })
     }
   },
   getters: {

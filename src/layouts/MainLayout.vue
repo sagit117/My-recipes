@@ -2,7 +2,7 @@
   <div id="app">
     <Header />
 
-    <div class="container">
+    <div class="container-fluid">
       
       <slot></slot>
 

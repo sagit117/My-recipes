@@ -24,12 +24,17 @@ export default {
     textError: String,
     caption: String,
     maxLength: Number,
-    success: Boolean
+    success: Boolean,
   },
   data() {
     return {
-      inputData: ''
+      inputData: '',
     }
+  },
+  watch: {
+    value: (v) => {
+      if (this.inputData !== undefined) console.log(v)
+    },
   },
   methods: {
     onInput() {

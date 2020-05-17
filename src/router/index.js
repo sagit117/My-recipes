@@ -32,7 +32,7 @@ const routes = [
     component: () => import('../views/Account.vue')
   },
   
-  { path: '/*', redirect: '/' }
+  { path: '*', redirect: '/' }
 ]
 
 const router = new VueRouter({
@@ -44,7 +44,8 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   if (to.meta.auth && !store.getters.getUserIsAuth) {
     // Нужно проверять залогинен пользователь, если нет выводить окно логина
-    store.commit('setAuthForm', 1)
+    router.push("/"); // ?
+    store.commit('setAuthForm', 1);
   } else {
     next()
   }
