@@ -31,11 +31,6 @@ export default {
       inputData: '',
     }
   },
-  watch: {
-    value: (v) => {
-      if (this.inputData !== undefined) console.log(v)
-    },
-  },
   methods: {
     onInput() {
       if (this.maxLength > 0 && this.inputData.length > this.maxLength) this.inputData = this.inputData.slice(0, this.maxLength)

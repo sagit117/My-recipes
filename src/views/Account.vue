@@ -56,6 +56,35 @@
     <div class="row">
       <div class="col-md-6">
         <form novalidate @submit.prevent="submitPass">
+          <Input 
+            type="password" 
+            @on-input="inputOldPass" 
+            :isError="oldPassError.minLength || oldPassError.wrongOldPass"
+            :textError="errorTextOldPass"
+            :maxLength="32"
+            caption="Старый пароль:"
+          />
+
+          <Input 
+            type="password" 
+            @on-input="inputPass" 
+            :isError="passError.minLength"
+            :textError="errorTextPass"
+            :maxLength="32"
+            caption="Новый пароль:"
+          />
+
+          <Input 
+            type="password" 
+            @on-input="inputConfPass" 
+            :isError="confPassError.wrongConfPass"
+            :textError="errorTextConfPass"
+            :maxLength="32"
+            caption="Подтверждение пароля:"
+            :success="confPass === pass && pass.length > 0"
+          />
+
+          <button type="submit" class="btn btn-success mb-2">Изменить пароль</button>
 
         </form>
       </div>
@@ -101,7 +130,20 @@ export default {
         show: false,
         text: "",
         title: ""
-      }
+      },
+      oldPass: "",
+      oldPassError: {
+        minLength: false,
+        wrongOldPass: false
+      },
+      pass: "",
+      passError: {
+        minLength: false,
+      },
+      confPass: "",
+      confPassError: {
+        wrongConfPass: false
+      },
     }
   },
   mounted() {
@@ -138,6 +180,23 @@ export default {
       if (this.patronError.symbolWrong) error = "Можно использовать только буквенные символы!";
       return error;
     },
+    errorTextOldPass() {
+      let error = "";
+      if (this.oldPassError.wrongOldPass) error = "Старый пароль не совпадает!";
+      if (this.oldPassError.minLength) error = "Поле старый пароль не должно быть пустым!";
+      return error;
+    },
+    errorTextPass() {
+      let error = "";
+      if (this.passError.minLength) error = "Поле пароль не должно быть пустым!";
+      return error;
+    },
+     errorTextConfPass() {
+      let error = "";
+      if (this.confPassError.wrongConfPass) error = "Подтверждение и пароль не совпадает!";
+      return error;
+    },
+
   },
   methods: {
     submitName() {
@@ -159,7 +218,13 @@ export default {
 
     },
     submitPass() {
-      //
+      this.passError.minLength = minLength(this.pass);
+      this.oldPassError.minLength = minLength(this.oldPass);
+      this.confPassError.wrongConfPass = this.pass !== this.confPass;
+
+      if (!this.passError.minLength && !this.oldPassError.minLength && !this.confPassError.wrongConfPass) {
+        //
+      }
     },
     inputName(value) {
       this.name = value;
@@ -173,6 +238,18 @@ export default {
     inputPatron(value) {
       this.patron = value;
       this.patronError.symbolWrong = (!testSymbol(this.patron) && !minLength(this.patron));
+    },
+    inputOldPass(value) {
+      this.oldPass = value;
+      this.oldPassError.minLength = minLength(this.oldPass);
+    },
+    inputPass(value) {
+      this.pass = value;
+      this.passError.minLength = minLength(this.pass);
+    },
+    inputConfPass(value) {
+      this.confPass = value;
+      this.confPassError.wrongConfPass = false;
     },
     exit() {
       localStorage.removeItem("userHash");
