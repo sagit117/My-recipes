@@ -186,6 +186,29 @@ export default new Vuex.Store({
           reject();
         })
       })
+    },
+    updateUser({ commit }, data) {    // обновить данные пользователя на сервере
+      commit('setShowWait', true);
+      data.append("login", localStorage.getItem("userLogin"));
+      data.append("hash", localStorage.getItem("userHash"));
+
+      api.updateUser(data)
+      .then((res) => {
+        commit('setShowWait', false);
+        if (res.errorCode === "") {
+          if (this.getters.getCurrentUser.id === res.user.id) {
+            commit('setCurrentUser', res.user);
+          }
+          commit('setAlert', { show: true, title: "Успешно", text: "Данные сохранены!", state: 1 });
+        } else {
+          commit('setAlert', { show: true, title: "Ошибка", text: res.errorText, state: 2 });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        commit('setShowWait', false);
+        commit('setAlert', { show: true, title: "Ошибка", text: error, state: 2 });
+      })
     }
   },
   getters: {

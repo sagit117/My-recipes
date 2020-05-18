@@ -1,6 +1,18 @@
 <template>
   <div class="container-fluid">
-    <h3>Личный кабинет пользователя {{ email }}</h3>
+    <div class="row">
+      <div class="col">
+        <h3>Личный кабинет пользователя {{ email }}</h3>
+      </div>
+      <div class="col">
+        <button 
+          type="button" 
+          class="btn btn-info" 
+          @click="confirm = { show: true, title: 'Подтвердите', text: 'Вы уверены, что хотите выйти из аккаунта?'}">
+            Выйти из аккаунта
+        </button>
+      </div>
+    </div>
 
     <div class="row">
       <div class="col-md-6">
@@ -25,19 +37,49 @@
             ref="surname"
           />
 
+          <Input 
+            type="text" 
+            @on-input="inputPatron" 
+            :isError="patronError.symbolWrong"
+            :textError="errorTextPatron"
+            :maxLength="32"
+            caption="Отчество:"
+            ref="patron"
+          />
+
+          <button type="submit" class="btn btn-success mb-2">Сохранить</button>
+
         </form>
       </div>
     </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <form novalidate @submit.prevent="submitPass">
+
+        </form>
+      </div>
+    </div>
+
+    <Confirm 
+      v-if="confirm.show" 
+      :title="confirm.title" 
+      :text="confirm.text" 
+      @click-ok="exit"
+      @click-cancel="confirm.show = false"
+    />
   </div>
 </template>
 
 <script>
 import Input from '@/components/Input.vue'
+import Confirm from '@/components/Confirm.vue'
 import {minLength, testSymbol} from '@/utils/Validate.js'
 
 export default {
   components: {
-    Input
+    Input,
+    Confirm
   },
   data() {
     return {
@@ -50,6 +92,15 @@ export default {
       surname: "",
       surnameError: {
         symbolWrong: false
+      },
+      patron: "",
+      patronError: {
+        symbolWrong: false
+      },
+      confirm: {
+        show: false,
+        text: "",
+        title: ""
       }
     }
   },
@@ -62,6 +113,8 @@ export default {
         this.$refs.name.inputData = this.name;
         this.surname = res.surname;
         this.$refs.surname.inputData = this.surname;
+        this.patron = res.patronymic;
+        this.$refs.patron.inputData = this.patron;
       })
       .catch(() => {})
     } else {
@@ -80,9 +133,32 @@ export default {
       if (this.surnameError.symbolWrong) error = "Можно использовать только буквенные символы!";
       return error;
     },
+    errorTextPatron() {
+      let error = "";
+      if (this.patronError.symbolWrong) error = "Можно использовать только буквенные символы!";
+      return error;
+    },
   },
   methods: {
     submitName() {
+      this.nameError.minLength = minLength(this.name);
+      this.nameError.symbolWrong = !testSymbol(this.name);
+      this.surnameError.symbolWrong = (!testSymbol(this.surname) && !minLength(this.surname));
+      this.patronError.symbolWrong = (!testSymbol(this.patron) && !minLength(this.patron));
+
+      if (!this.nameError.minLength && !this.nameError.symbolWrong && !this.surnameError.symbolWrong && !this.patronError.symbolWrong) {
+        // submit
+        let formData = new FormData();
+        formData.append("id", this.$route.params.id);
+        formData.append("name", this.name);
+        formData.append("surname", this.surname);
+        formData.append("patronymic", this.patron);
+
+        this.$store.dispatch("updateUser", formData);
+      }
+
+    },
+    submitPass() {
       //
     },
     inputName(value) {
@@ -93,6 +169,17 @@ export default {
     inputSurame(value) {
       this.surname = value;
       this.surnameError.symbolWrong = (!testSymbol(this.surname) && !minLength(this.surname));
+    },
+    inputPatron(value) {
+      this.patron = value;
+      this.patronError.symbolWrong = (!testSymbol(this.patron) && !minLength(this.patron));
+    },
+    exit() {
+      localStorage.removeItem("userHash");
+      localStorage.removeItem("userLogin");
+      this.$store.commit('setUserAuth', false);
+      this.$store.commit('setCurrentUser', {});
+      this.$router.push('/');
     }
   }
 }

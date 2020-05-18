@@ -15,6 +15,11 @@
 </template>
 
 <script>
+  // component: Alert
+  // version: 0.0.1
+  // date: 05.2020
+  // sagit117@gmail.com 
+
 export default {
   data() {
     return {

@@ -52,6 +52,13 @@ class API {
     })
   }
 
+  updateUser(data) {
+    return axios.post(`${apiMyRecipes}c_updateUser.php`, data)
+    .then((response) => {
+      return response.data
+    })
+  }
+
  }
 
 export default API
