@@ -223,7 +223,13 @@ export default {
       this.confPassError.wrongConfPass = this.pass !== this.confPass;
 
       if (!this.passError.minLength && !this.oldPassError.minLength && !this.confPassError.wrongConfPass) {
-        //
+        // submit pass
+        let formData = new FormData();
+        formData.append("id", this.$route.params.id);
+        formData.append("oldPass", this.oldPass);
+        formData.append("newPass", this.pass);
+
+        this.$store.dispatch("updateUser", formData);
       }
     },
     inputName(value) {
