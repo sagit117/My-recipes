@@ -40,6 +40,18 @@
             $res->errorCode .= "update_user/save_patronymic_error ";
           }
         }
+        if (isset($_POST['newPass'])) {
+          if ($usr->pass === md5(md5($_POST['oldPass']))) {
+            if (!updateUser("password", md5(md5($_POST['newPass'])), "id", $id)) {
+              $res->errorText .= "Не удалось сохранить пароль пользователя! ";
+              $res->errorCode .= "update_user/save_pass_error ";
+            }
+          } else {
+            $res->errorText .= "Старый пароль не совпадает! ";
+            $res->errorCode .= "auth/old_pass_wrong ";
+          }
+        }
+
         $res->user = getUser('id', $id)[0];
         exit(json_encode($res));
       } else {

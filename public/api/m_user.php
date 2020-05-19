@@ -115,7 +115,7 @@
     while ($user = mysqli_fetch_assoc($result)) {
       $usr = new User();
       $usr->id = $user['id_user'];
-      //$usr->pass = $user['password'];
+      $usr->pass = $user['password'];
       $usr->post = $user['post'];
       $usr->name = $user['name'];
       $usr->surname = $user['surname'];
