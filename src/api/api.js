@@ -59,6 +59,13 @@ class API {
     })
   }
 
+  getGroupsFR(data) {
+    return axios.post(`${apiMyRecipes}c_getGroupFR.php`, data)
+    .then((response) => {
+      return response.data
+    })
+  }
+
  }
 
 export default API

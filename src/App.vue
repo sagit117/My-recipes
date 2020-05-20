@@ -39,7 +39,7 @@ export default {
   created() {
     this.$store.dispatch('loginWithHash', { hash: localStorage.getItem('userHash'), login: localStorage.getItem('userLogin') });
     this.$store.subscribe((mutation/*, state*/) => {
-      if (mutation.type === 'setUserAuth' && mutation.payload === true) {
+      if (mutation.type === 'setUserAuth' && mutation.payload === true) { // закрыть форму логина если залогинен
         if (this.$store.getters.getAuthForm === 1) this.$store.commit('setAuthForm', 0);
       }
     });

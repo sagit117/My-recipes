@@ -209,6 +209,29 @@ export default new Vuex.Store({
         commit('setShowWait', false);
         commit('setAlert', { show: true, title: "Ошибка", text: error, state: 2 });
       })
+    },
+    getGroupsFR({ commit }, data) {   // получить список групп фото рецептов
+      return new Promise((resolve, reject) => {
+        commit('setShowWait', true)
+        data.append("login", localStorage.getItem("userLogin"))
+        data.append("hash", localStorage.getItem("userHash"))
+
+        api.getGroupsFR(data)
+        .then((res) => {
+          commit('setShowWait', false)
+          if (res.errorCode === '') resolve(res.group)
+          else {
+            reject()
+            commit('setAlert', { show: true, title: "Ошибка", text: res.errorText, state: 2 })
+          }
+        })
+        .catch((error) => {
+          reject();
+          console.log(error)
+          commit('setShowWait', false)
+          commit('setAlert', { show: true, title: "Ошибка", text: error, state: 2 })
+        })
+      })
     }
   },
   getters: {

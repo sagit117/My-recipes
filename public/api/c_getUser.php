@@ -40,3 +40,5 @@
       exit(json_encode($res));
     }
   }
+
+?>

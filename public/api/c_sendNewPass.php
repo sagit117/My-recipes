@@ -40,35 +40,4 @@
 
     exit(json_encode($res));
   }
-
-  /*if (intval($_POST['id']) > 0) {
-    // смена пароля из личного кабинета 
-    $user = getUserWithHash($_POST['hash'])[0];
-    if ($user->post !== $_POST['login']) {
-      $res->errorText = "Хэш не определен!";
-      $res->errorCode = "auth/hash_wrong";
-      exit(json_encode($res));
-    }
-
-    if ($_POST['id'] !== $user->id and $user->rule !== 'admin') {
-      $res->errorText = "Доступ запрещен!";
-      $res->errorCode = "auth/rule_wrong";
-      exit(json_encode($res));
-    }
-
-    $id = intval($_POST['id']);
-    $oldPass = md5(md5($_POST['oldPass']));
-    $newPass = md5(md5($_POST['newPass']));
-    $pass = getUser("id", $id)[0]->pass;
-    
-    if ($oldPass !== $pass) {
-      $res->errorCode = "auth/oldpass_wrong";
-      $res->errorText = "Старый пароль не совпадает!";
-      exit(json_encode($res));
-    }
-
-    updateUser("password", $newPass, "id", $id);
-    exit(json_encode($res));
-  }*/
-
 ?>

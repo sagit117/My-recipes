@@ -14,7 +14,7 @@
 
   class User {
     public $id = 0;
-    public $pass = "";
+    public $password = "";
     public $post = "";
     public $name = "";
     public $surname = "";
@@ -26,8 +26,7 @@
     public $updated_at = "";
   }
 
-  function getUser($key, $value) {
-    // получить данные пользователя по полю
+  function getUser($key, $value) { // получить данные пользователя по полю
     global $link;
     $key = mysqli_real_escape_string($link, $key);
     $value = mysqli_real_escape_string($link, $value);
@@ -36,25 +35,17 @@
 
     while ($user = mysqli_fetch_assoc($result)) {
       $usr = new User();
-      $usr->id = $user['id'];
-      $usr->pass = $user['password'];
-      $usr->post = $user['post'];
-      $usr->name = $user['name'];
-      $usr->surname = $user['surname'];
-      $usr->patronymic = $user['patronymic'];
-      $usr->datereg = $user['datereg'];
-      $usr->rule = $user['rule'];
-      $usr->last_connect = $user['last_connect'];
-      $usr->created_at = $user['created_at'];
-      $usr->updated_at = $user['updated_at'];
+      $usr = (array) $usr;
 
-      array_push($arr, $usr); // собираем всех найденных пользователей в массив
+      foreach($user as $key => $value) {
+        $usr[$key] = $value;
+      }
+      array_push($arr, (object) $usr); // собираем всех найденных пользователей в массив
     }
     return $arr;
   }
 
-  function updateUserHash($id_user) {
-    // обновить запись хэш в БД
+  function updateUserHash($id_user) { // обновить запись хэш в БД
     global $link;
     $id_user = intval($id_user);
     $hash = md5(generateCode(10));
@@ -114,26 +105,19 @@
 
     while ($user = mysqli_fetch_assoc($result)) {
       $usr = new User();
-      $usr->id = $user['id_user'];
-      $usr->pass = $user['password'];
-      $usr->post = $user['post'];
-      $usr->name = $user['name'];
-      $usr->surname = $user['surname'];
-      $usr->patronymic = $user['patronymic'];
-      $usr->datereg = $user['datereg'];
-      $usr->rule = $user['rule'];
-      $usr->last_connect = $user['last_connect'];
-      $usr->created_at = $user['created_at'];
-      $usr->updated_at = $user['updated_at'];
+      $usr = (array) $usr;
 
-      array_push($arr, $usr); // собираем всех найденных пользователей в массив
+      foreach($user as $key => $value) {
+        if ($key === "id_user") $usr['id'] = $value;
+        else $usr[$key] = $value;
+      }
+      array_push($arr, (object) $usr); // собираем всех найденных пользователей в массив
     }
 
     return $arr;
   }
 
-  function createUser($user, $pass) {
-    // создать пользователя
+  function createUser($user, $pass) { // создать пользователя
     global $link;
     $user = mysqli_real_escape_string($link, $user);
     $pass = md5(md5($pass));

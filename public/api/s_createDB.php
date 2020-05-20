@@ -28,14 +28,17 @@
     . "`created_at` VARCHAR(32),"
     . "`updated_at` VARCHAR(32))") or die('Ошибка запроса `user_hash`! '.mysqli_error($link));
 
-  /*//  categories_recipes
+  //  categories_recipes
   mysqli_query($link, "CREATE TABLE IF NOT EXISTS `categories_recipes` ("
-            . "`id`         INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,"
-            . "`parent_id`  INT(11) NOT NULL,"
-            . "`name`       TEXT,"
-            . "`author_id`  INT(11))") or die('Ошибка запроса `categories_recipes`! '.mysqli_error($link));
+    . "`id`         INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,"
+    . "`parent_id`  INT(11),"
+    . "`name`       TEXT,"
+    . "`author_id`  INT(11),"
+    . "`public`     INT(1),"
+    . "`created_at` VARCHAR(32),"
+    . "`updated_at` VARCHAR(32))") or die('Ошибка запроса `categories_recipes`! '.mysqli_error($link));
 
-  //  foto_recipes
+  /*//  foto_recipes
   mysqli_query($link, "CREATE TABLE IF NOT EXISTS `foto_recipes` ("
             . "`id`         INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,"
             . "`parent_id`  INT(11) NOT NULL,"

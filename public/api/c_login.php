@@ -24,7 +24,7 @@
     $user = getUser("post", $_POST['login']); // возвращает массив пользователей
     
     if (count($user) > 0) {
-      if ($user[0]->pass === $pass) {
+      if ($user[0]->password === $pass) {
         $hash = updateUserHash($user[0]->id);
         if (($hash)[1] === 'ok') {
           $res->hash = $hash[0];

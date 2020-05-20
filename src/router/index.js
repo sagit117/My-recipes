@@ -44,7 +44,7 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   if (to.meta.auth && !store.getters.getUserIsAuth) {
     // Нужно проверять залогинен пользователь, если нет выводить окно логина
-    router.push("/"); // ?
+    if (from.path !== "/") router.push("/"); // ?
     store.commit('setAuthForm', 1);
   } else {
     next()
